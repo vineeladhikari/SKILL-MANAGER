@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo Bank Notification System</title>
+
+    <!-- CSS file link -->
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            width: 350px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #1a73e8;
+        }
+
+        .warning {
+            font-size: 12px;
+            color: red;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        textarea {
+            resize: none;
+            height: 80px;
+        }
+
+        button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 10px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0f5bd7;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 11px;
+            margin-top: 10px;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Demo Bank Alert</h2>
+
+    <p class="warning">
+        ⚠ This website is for educational/demo purposes only.
+    </p>
+
+    <form id="bankForm">
+        <label>User Name</label>
+        <input type="text" placeholder="Enter user name" required>
+
+        <label>Email Address</label>
+        <input type="email" placeholder="Enter email" required>
+
+        <label>Message</label>
+        <textarea placeholder="Enter demo bank message" required></textarea>
+
+        <button type="submit">Send Message</button>
+    </form>
+
+    <footer>
+        © Demo Bank | Not a real banking service
+    </footer>
+</div>
+
+<!-- JavaScript file link -->
+<script src="script.js"></script>
+
+</body>
+</html>

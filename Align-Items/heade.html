@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>align-content Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section h2 {
+      background: #333;
+      color: white;
+      padding: 8px 15px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;        /* MUST for align-content to work */
+      height: 200px;          /* Fixed height to see the effect */
+      background: #dce8f5;
+      border: 2px solid #4a90d9;
+      border-radius: 8px;
+      gap: 10px;
+      padding: 10px;
+    }
+
+    .box {
+      width: 80px;
+      height: 50px;
+      background: #4a90d9;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    /* align-content values */
+    .flex-start    { align-content: flex-start; }
+    .flex-end      { align-content: flex-end; }
+    .center        { align-content: center; }
+    .space-between { align-content: space-between; }
+    .space-around  { align-content: space-around; }
+    .space-evenly  { align-content: space-evenly; }
+    .stretch       { align-content: stretch; }
+
+    /* stretch boxes should grow */
+    .stretch .box {
+      height: auto;
+      flex-grow: 1;
+    }
+
+    /* buttons */
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 30px;
+      justify-content: center;
+    }
+
+    button {
+      padding: 10px 18px;
+      background: #4a90d9;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    button:hover { background: #2c6fad; }
+    button.active { background: #e67e22; }
+
+    /* Live Demo */
+    #live-label {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: #e67e22;
+      margin-bottom: 10px;
+    }
+
+    #live-container {
+      display: flex;
+      flex-wrap: wrap;
+      height: 220px;
+      background: #dce8f5;
+      border: 2px solid #e67e22;
+      border-radius: 8px;
+      gap: 10px;
+      padding: 10px;
+      align-content: flex-start;
+      transition: all 0.4s ease;
+    }
+
+    #live-container .box {
+      background: #e67e22;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎯 align-content Demo</h1>
+
+  <!-- Interactive Live Demo -->
+  <div id="live-label">▶ Live Demo — Click a button to change align-content</div>
+
+  <div class="buttons">
+    <button onclick="setAlign('flex-start')" class="active">flex-start</button>
+    <button onclick="setAlign('flex-end')">flex-end</button>
+    <button onclick="setAlign('center')">center</button>
+    <button onclick="setAlign('space-between')">space-between</button>
+    <button onclick="setAlign('space-around')">space-around</button>
+    <button onclick="setAlign('space-evenly')">space-evenly</button>
+    <button onclick="setAlign('stretch')">stretch</button>
+  </div>
+
+  <div id="live-container">
+    <div class="box">1</div>
+    <div class="box">2</div>
+    <div class="box">3</div>
+    <div class="box">4</div>
+    <div class="box">5</div>
+    <div class="box">6</div>
+    <div class="box">7</div>
+    <div class="box">8</div>
+  </div>
+
+  <br><hr><br>
+
+  <!-- Static Examples for all values -->
+  <div class="section">
+    <h2>1. flex-start — rows packed to top</h2>
+    <div class="container flex-start">
+      <div class="box">1</div><div class="box">2</div><div class="box">3</div>
+      <div class="box">4</div><div class="box">5</div><div class="box">6</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2. flex-end — rows packed to bottom</h2>
+    <div class="container flex-end">
+      <div class="box">1</div><div class="box">2</div><div class="box">3</div>
+      <div class="box">4</div><div class="box">5</div><div class="box">6</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3. center — rows centered</h2>
+    <div class="container center">
+      <div class="box">1</div><div class="box">2</div><div class="box">3</div>
+      <div class="box">4</div><div class="box">5</div><div class="box">6</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4. space-between — equal space between rows</h2>
+    <div class="container space-between">
+      <div class="box">1</div><div class="box">2</div><div class="box">3</div>
+      <div class="box">4</div><div class="box">5</div><div class="box">6</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>5. space-around — equal space around rows</h2>
+    <div class="container space-around">
+      <div class="box">1</div><div class="box">2</div><div class="box">3</div>
+      <div class="box">4</div><div class="box">5</div><div class="box">6</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>6. space-evenly — equal space everywhere</h2>
+    <div class="container space-evenly">
+      <div class="box">1</div><div class="box">2</div><div class="box">3</div>
+      <div class="box">4</div><div class="box">5</div><div class="box">6</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>7. stretch — rows stretch to fill container</h2>
+    <div class="container stretch">
+      <div class="box">1</div><div class="box">2</div><div class="box">3</div>
+      <div class="box">4</div><div class="box">5</div><div class="box">6</div>
+    </div>
+  </div>
+
+  <script>
+    function setAlign(value) {
+      const container = document.getElementById('live-container');
+      container.style.alignContent = value;
+
+      // Update active button
+      document.querySelectorAll('button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent === value) btn.classList.add('active');
+      });
+
+      // stretch fix
+      const boxes = container.querySelectorAll('.box');
+      boxes.forEach(box => {
+        box.style.height = value === 'stretch' ? 'auto' : '50px';
+        box.style.flexGrow = value === 'stretch' ? '1' : '0';
+      });
+    }
+  </script>
+
+</body>
+</html>

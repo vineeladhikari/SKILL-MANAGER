@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Gap Analyser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#101b33;
+    --ink-2:#16264a;
+    --ink-3:#1c2f59;
+    --line:#345080;
+    --line-soft:#28406b;
+    --paper:#ece6d6;
+    --amber:#e2a73e;
+    --amber-dim:#7a5f2c;
+    --cyan:#6fe3d0;
+    --text:#edeae0;
+    --text-dim:#93a4c7;
+    --red:#e0684f;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      linear-gradient(var(--line-soft) 1px, transparent 1px) 0 0/40px 40px,
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px) 0 0/40px 40px,
+      var(--ink);
+    background-blend-mode:normal;
+    opacity:1;
+    color:var(--text);
+    font-family:'Public Sans', sans-serif;
+    min-height:100vh;
+    padding:28px 20px 60px;
+  }
+  .wrap{max-width:1160px;margin:0 auto;}
+
+  /* ---- title block, drafting-stamp style ---- */
+  header{
+    border:1px solid var(--line);
+    padding:18px 22px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:14px;
+    margin-bottom:22px;
+    background:rgba(16,27,51,0.55);
+  }
+  .title-block h1{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    font-size:22px;
+    letter-spacing:0.02em;
+    margin:0 0 6px;
+    color:var(--text);
+  }
+  .title-block p{
+    margin:0;
+    color:var(--text-dim);
+    font-size:14px;
+    max-width:46ch;
+    line-height:1.5;
+  }
+  .stamp{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--text-dim);
+    text-align:right;
+    line-height:1.7;
+    border-left:1px solid var(--line);
+    padding-left:16px;
+  }
+  .stamp span{color:var(--amber);}
+
+  /* ---- layout ---- */
+  .grid{
+    display:grid;
+    grid-template-columns:380px 1fr;
+    gap:22px;
+    align-items:start;
+  }
+  @media (max-width:860px){
+    .grid{grid-template-columns:1fr;}
+  }
+
+  .panel{
+    border:1px solid var(--line);
+    background:rgba(23,38,73,0.5);
+    padding:20px;
+  }
+  .panel + .panel{margin-top:22px;}
+
+  .panel h2{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--cyan);
+    margin:0 0 16px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--line-soft);
+  }
+
+  /* ---- skill rows ---- */
+  .row{
+    border:1px solid var(--line-soft);
+    padding:12px 14px 14px;
+    margin-bottom:12px;
+    position:relative;
+  }
+  .row-top{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    margin-bottom:10px;
+  }
+  .row-top input[type="text"]{
+    flex:1;
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--line);
+    color:var(--text);
+    font-family:'Public Sans', sans-serif;
+    font-size:14px;
+    padding:4px 2px;
+  }
+  .row-top input[type="text"]:focus{
+    outline:none;
+    border-bottom-color:var(--amber);
+  }
+  .remove-btn{
+    background:none;
+    border:1px solid var(--line);
+    color:var(--text-dim);
+    width:24px;
+    height:24px;
+    line-height:1;
+    cursor:pointer;
+    font-size:14px;
+    flex-shrink:0;
+  }
+  .remove-btn:hover{border-color:var(--red);color:var(--red);}
+
+  .slider-line{
+    display:grid;
+    grid-template-columns:64px 1fr 22px;
+    align-items:center;
+    gap:10px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--text-dim);
+    margin-bottom:6px;
+  }
+  .slider-line:last-child{margin-bottom:0;}
+  input[type="range"]{
+    -webkit-appearance:none;
+    width:100%;
+    height:2px;
+    background:var(--line);
+    outline:none;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:14px;height:14px;
+    border-radius:1px;
+    cursor:pointer;
+    transform:rotate(45deg);
+    border:1px solid var(--ink);
+  }
+  input[type="range"]::-moz-range-thumb{
+    width:12px;height:12px;
+    border-radius:1px;
+    cursor:pointer;
+    border:1px solid var(--ink);
+  }
+  .row-current input[type="range"]::-webkit-slider-thumb{background:var(--cyan);}
+  .row-current input[type="range"]::-moz-range-thumb{background:var(--cyan);}
+  .row-target input[type="range"]::-webkit-slider-thumb{background:var(--paper);}
+  .row-target input[type="range"]::-moz-range-thumb{background:var(--paper);}
+  .slider-line .val{text-align:right;color:var(--text);}
+
+  .add-btn{
+    width:100%;
+    background:transparent;
+    border:1px dashed var(--line);
+    color:var(--text-dim);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.05em;
+    padding:10px;
+    cursor:pointer;
+    margin-top:4px;
+  }
+  .add-btn:hover{border-color:var(--amber);color:var(--amber);}
+
+  .legend{
+    display:flex;
+    gap:18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--text-dim);
+    margin-top:14px;
+    flex-wrap:wrap;
+  }
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:10px;height:10px;display:inline-block;}
+
+  /* ---- right column ---- */
+  .chart-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:22px;
+  }
+  @media (max-width:640px){ .chart-row{grid-template-columns:1fr;} }
+
+  #radar{width:100%;height:auto;display:block;}
+
+  .bar-item{margin-bottom:14px;}
+  .bar-item:last-child{margin-bottom:0;}
+  .bar-label{
+    display:flex;justify-content:space-between;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--text-dim);
+    margin-bottom:5px;
+  }
+  .bar-label b{color:var(--text);font-weight:600;}
+  .bar-track{
+    position:relative;
+    height:14px;
+    background:var(--line-soft);
+    border:1px solid var(--line);
+  }
+  .bar-current{
+    position:absolute;top:0;left:0;bottom:0;
+    background:var(--cyan);
+    opacity:0.85;
+  }
+  .bar-gap{
+    position:absolute;top:0;bottom:0;
+    background:repeating-linear-gradient(45deg, var(--amber), var(--amber) 4px, transparent 4px, transparent 8px);
+    border-left:1px solid var(--amber);
+  }
+  .bar-target-mark{
+    position:absolute;top:-2px;bottom:-2px;
+    width:2px;
+    background:var(--paper);
+  }
+  .bar-met{color:var(--cyan);}
+
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    margin-top:18px;
+  }
+  @media (max-width:640px){ .stats{grid-template-columns:repeat(2,1fr);} }
+  .stat{
+    background:var(--ink-2);
+    padding:14px 12px;
+  }
+  .stat .n{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:22px;
+    color:var(--amber);
+    display:block;
+    line-height:1;
+    margin-bottom:6px;
+  }
+  .stat .l{
+    font-size:11px;
+    color:var(--text-dim);
+    letter-spacing:0.03em;
+  }
+
+  .priority{
+    margin-top:18px;
+    padding-top:16px;
+    border-top:1px solid var(--line-soft);
+    font-size:14px;
+    color:var(--text-dim);
+    line-height:1.6;
+  }
+  .priority b{color:var(--amber);font-weight:600;}
+
+  .empty{
+    color:var(--text-dim);
+    font-size:13px;
+    padding:20px 0;
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="title-block">
+      <h1>SKILL GAP ANALYSER</h1>
+      <p>Plot where you stand against where a role needs you to be, then work the list top to bottom.</p>
+    </div>
+    <div class="stamp">
+      DRAWING NO. SGA-01<br>
+      SCALE 0&ndash;5 <span>&middot;</span> REV <span id="revcount">1</span><br>
+      STATUS: <span id="statusline">IN PROGRESS</span>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- LEFT: input -->
+    <div class="panel">
+      <h2>Skills &amp; Levels</h2>
+      <div id="rows"></div>
+      <button class="add-btn" id="addRow">+ ADD SKILL</button>
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--cyan)"></span>current</span>
+        <span><span class="swatch" style="background:var(--paper)"></span>target</span>
+        <span><span class="swatch" style="background:var(--amber)"></span>gap</span>
+      </div>
+    </div>
+
+    <!-- RIGHT: visuals -->
+    <div>
+      <div class="chart-row">
+        <div class="panel">
+          <h2>Profile</h2>
+          <svg id="radar" viewBox="0 0 320 320"></svg>
+        </div>
+        <div class="panel">
+          <h2>Gap, Largest First</h2>
+          <div id="bars"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Summary</h2>
+        <div class="stats" id="stats"></div>
+        <div class="priority" id="priority"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  let skills = [
+    { name: "Data structures & algorithms", current: 3, target: 4 },
+    { name: "System design", current: 2, target: 4 },
+    { name: "Communication with stakeholders", current: 3, target: 3 },
+    { name: "Testing & debugging", current: 2, target: 4 },
+    { name: "Public speaking", current: 1, target: 3 }
+  ];
+  let idCounter = 0;
+  skills.forEach(s => s.id = idCounter++);
+  let revisions = 1;
+
+  const rowsEl = document.getElementById('rows');
+  const barsEl = document.getElementById('bars');
+  const statsEl = document.getElementById('stats');
+  const priorityEl = document.getElementById('priority');
+  const radarEl = document.getElementById('radar');
+  const revEl = document.getElementById('revcount');
+  const statusEl = document.getElementById('statusline');
+
+  function addSkill(){
+    skills.push({ id: idCounter++, name: "", current: 2, target: 3 });
+    renderAll();
+    const inputs = rowsEl.querySelectorAll('input[type="text"]');
+    if(inputs.length) inputs[inputs.length-1].focus();
+  }
+
+  function removeSkill(id){
+    skills = skills.filter(s => s.id !== id);
+    renderAll();
+  }
+
+  function updateSkill(id, field, value){
+    const s = skills.find(s => s.id === id);
+    if(!s) return;
+    s[field] = field === 'name' ? value : Number(value);
+    revisions++;
+    revEl.textContent = revisions;
+    renderAll(field === 'name' ? id : null);
+  }
+
+  function renderRows(){
+    rowsEl.innerHTML = '';
+    skills.forEach(s => {
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.innerHTML = `
+        <div class="row-top">
+          <input type="text" placeholder="Skill name" value="${escapeHtml(s.name)}" data-id="${s.id}" data-field="name">
+          <button class="remove-btn" data-id="${s.id}" title="Remove">&times;</button>
+        </div>
+        <div class="slider-line row-current">
+          <span>CURRENT</span>
+          <input type="range" min="0" max="5" step="1" value="${s.current}" data-id="${s.id}" data-field="current">
+          <span class="val">${s.current}</span>
+        </div>
+        <div class="slider-line row-target">
+          <span>TARGET</span>
+          <input type="range" min="0" max="5" step="1" value="${s.target}" data-id="${s.id}" data-field="target">
+          <span class="val">${s.target}</span>
+        </div>
+      `;
+      rowsEl.appendChild(row);
+    });
+
+    rowsEl.querySelectorAll('input[type="text"]').forEach(inp => {
+      inp.addEventListener('input', e => updateSkill(Number(e.target.dataset.id), 'name', e.target.value));
+    });
+    rowsEl.querySelectorAll('input[type="range"]').forEach(inp => {
+      inp.addEventListener('input', e => updateSkill(Number(e.target.dataset.id), e.target.dataset.field, e.target.value));
+    });
+    rowsEl.querySelectorAll('.remove-btn').forEach(btn => {
+      btn.addEventListener('click', e => removeSkill(Number(e.target.dataset.id)));
+    });
+  }
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function renderBars(){
+    const named = skills.filter(s => s.name.trim() !== '');
+    if(named.length === 0){
+      barsEl.innerHTML = '<div class="empty">Add a skill to see the gap breakdown.</div>';
+      return;
+    }
+    const sorted = [...named].sort((a,b) => (b.target - b.current) - (a.target - a.current));
+    barsEl.innerHTML = sorted.map(s => {
+      const gap = s.target - s.current;
+      const curPct = (s.current/5)*100;
+      const targetPct = (s.target/5)*100;
+      const gapLeft = Math.min(curPct, targetPct);
+      const gapWidth = Math.abs(targetPct - curPct);
+      const label = gap > 0 ? `gap ${gap}` : (gap < 0 ? 'above target' : 'met');
+      return `
+        <div class="bar-item">
+          <div class="bar-label"><b>${escapeHtml(s.name)}</b><span class="${gap<=0?'bar-met':''}">${label}</span></div>
+          <div class="bar-track">
+            <div class="bar-current" style="width:${curPct}%"></div>
+            ${gap>0 ? `<div class="bar-gap" style="left:${gapLeft}%;width:${gapWidth}%"></div>` : ''}
+            <div class="bar-target-mark" style="left:${targetPct}%"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderStats(){
+    const named = skills.filter(s => s.name.trim() !== '');
+    const total = named.length;
+    const met = named.filter(s => s.current >= s.target).length;
+    const gaps = named.map(s => s.target - s.current);
+    const avgGap = total ? (gaps.reduce((a,b)=>a+b,0)/total) : 0;
+    const worst = total ? named.reduce((a,b) => (b.target-b.current) > (a.target-a.current) ? b : a) : null;
+
+    statsEl.innerHTML = `
+      <div class="stat"><span class="n">${total}</span><span class="l">SKILLS TRACKED</span></div>
+      <div class="stat"><span class="n">${met}</span><span class="l">AT OR ABOVE TARGET</span></div>
+      <div class="stat"><span class="n">${avgGap.toFixed(1)}</span><span class="l">AVERAGE GAP</span></div>
+      <div class="stat"><span class="n">${worst && (worst.target-worst.current) > 0 ? (worst.target-worst.current) : 0}</span><span class="l">LARGEST GAP</span></div>
+    `;
+
+    if(total === 0){
+      priorityEl.innerHTML = '';
+      statusEl.textContent = 'AWAITING INPUT';
+    } else if(worst && worst.target - worst.current > 0){
+      priorityEl.innerHTML = `Start with <b>${escapeHtml(worst.name)}</b> &mdash; it has the widest gap between where you are and where the role needs you. Closing it first has the biggest effect on your overall profile.`;
+      statusEl.textContent = met === total ? 'ON TARGET' : 'IN PROGRESS';
+    } else {
+      priorityEl.innerHTML = `Every tracked skill meets or exceeds its target. Consider raising the bar on your strongest area, or adding a new skill to track.`;
+      statusEl.textContent = 'ON TARGET';
+    }
+  }
+
+  function renderRadar(){
+    const named = skills.filter(s => s.name.trim() !== '');
+    const cx = 160, cy = 160, maxR = 120;
+    const n = named.length;
+
+    if(n < 3){
+      radarEl.innerHTML = `<text x="160" y="160" text-anchor="middle" fill="#93a4c7" font-family="IBM Plex Mono, monospace" font-size="12">Add 3+ named skills</text><text x="160" y="178" text-anchor="middle" fill="#93a4c7" font-family="IBM Plex Mono, monospace" font-size="12">to plot the radar</text>`;
+      return;
+    }
+
+    const angleFor = i => (Math.PI * 2 * i / n) - Math.PI/2;
+    const pointFor = (i, val) => {
+      const r = (val/5) * maxR;
+      const a = angleFor(i);
+      return [cx + r*Math.cos(a), cy + r*Math.sin(a)];
+    };
+
+    let svg = '';
+
+    // grid rings
+    [1,2,3,4,5].forEach(step => {
+      const r = (step/5)*maxR;
+      let pts = [];
+      for(let i=0;i<n;i++){
+        const a = angleFor(i);
+        pts.push(`${cx+r*Math.cos(a)},${cy+r*Math.sin(a)}`);
+      }
+      svg += `<polygon points="${pts.join(' ')}" fill="none" stroke="#345080" stroke-width="${step===5?1:0.5}" opacity="${step===5?0.9:0.4}"/>`;
+    });
+
+    // spokes + labels
+    named.forEach((s,i) => {
+      const a = angleFor(i);
+      const x2 = cx + maxR*Math.cos(a);
+      const y2 = cy + maxR*Math.sin(a);
+      svg += `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#345080" stroke-width="0.5" opacity="0.4"/>`;
+
+      const lx = cx + (maxR+22)*Math.cos(a);
+      const ly = cy + (maxR+22)*Math.sin(a);
+      const label = s.name.length > 14 ? s.name.slice(0,13)+'…' : s.name;
+      svg += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" fill="#93a4c7" font-family="IBM Plex Mono, monospace" font-size="9">${escapeHtml(label)}</text>`;
+    });
+
+    // target polygon (paper, dashed)
+    let targetPts = named.map((s,i) => pointFor(i, s.target).join(',')).join(' ');
+    svg += `<polygon points="${targetPts}" fill="none" stroke="#ece6d6" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.85"/>`;
+
+    // current polygon (cyan, filled)
+    let currentPts = named.map((s,i) => pointFor(i, s.current).join(',')).join(' ');
+    svg += `<polygon points="${currentPts}" fill="#6fe3d0" fill-opacity="0.18" stroke="#6fe3d0" stroke-width="1.5"/>`;
+
+    named.forEach((s,i) => {
+      const [px,py] = pointFor(i, s.current);
+      svg += `<circle cx="${px}" cy="${py}" r="2.5" fill="#6fe3d0"/>`;
+    });
+
+    radarEl.innerHTML = svg;
+  }
+
+  function renderAll(){
+    renderRows();
+    renderBars();
+    renderStats();
+    renderRadar();
+  }
+
+  document.getElementById('addRow').addEventListener('click', addSkill);
+
+  renderAll();
+})();
+</script>
+</body>
+</html>

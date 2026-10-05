@@ -1,0 +1,29 @@
+body
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+}
+div
+{
+    height:400px;
+    width:400px;
+    background-color: darkcyan;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#box2
+{
+    height:50%;
+    width:50%;
+    background-color: rgb(138, 49, 64);
+}
+#box3
+{
+    height:50%;
+    width:50%;
+    background-color: rgb(49, 49, 138);
+}
